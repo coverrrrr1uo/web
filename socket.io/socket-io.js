@@ -1,3 +1,10 @@
+var db = require('./db');
+
+function logChatRecords(room) {
+db.findChatRecords({room: room}, function(result){
+  console.log(result);
+});
+}
 
 exports.init = function(io) {
 
@@ -15,6 +22,14 @@ exports.init = function(io) {
           });
 
           socket.on('chat', function (room, userId, chatText) {
+            db.saveChatRecords(
+              {
+                room: room,
+                userId: userId,
+                chatText: chatText
+              }      
+            );
+            logChatRecords(room);
             chat.to(room).emit('chat', room, userId, chatText);
           });
 
