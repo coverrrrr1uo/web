@@ -6,6 +6,7 @@ var logger = require('morgan');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var chatRecordsRouter = require('./routes/chatRecords');
 
 var app = express();
 
@@ -21,6 +22,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
+app.use('/chatRecords', chatRecordsRouter);
+// app.post('/chatRecords',function(req,res){
+//  console.log("index POST request");
+//    res.send('Hello POST');
+// })
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
