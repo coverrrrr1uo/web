@@ -98,6 +98,31 @@ function connectToRoom() {
     //@todo join the room
     initCanvas(socket, imageUrl);
     hideLoginInterface(roomNo, name);
+    $.post({
+        url : "/chatRecords",
+        data : JSON.stringify({
+            "roomNo": roomNo
+        }),
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        success : function(arr) {
+            if (arr != undefined && arr != null) {
+                var len = arr.length;
+                for(var i = 0; i < len; i++) {
+                    var entity = arr[i];
+                    var chatText = entity.chatText;
+                    let who = entity.userId;
+                    if (userId === name) who = 'Me';
+                    writeOnChatHistory('<b>' + who + ':</b> ' + chatText);
+                }
+            }
+
+        },
+        error : function(e) {
+
+        }
+    });
     sendAjaxQuery('/imageRoute', imageData);
 }
 
@@ -154,7 +179,7 @@ function hideLoginInterface(room, userId) {
     document.getElementById('who_you_are').innerHTML= userId;
     document.getElementById('in_room').innerHTML= ' '+room;
 }
-
+//Service worker here
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
         navigator.serviceWorker.register('/service-worker.js').then(function(registration) {
