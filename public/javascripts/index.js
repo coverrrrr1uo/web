@@ -14,9 +14,9 @@ function init() {
     // it sets up the interface so that userId and room are selected
     document.getElementById('initial_form').style.display = 'block';
     document.getElementById('chat_interface').style.display = 'none';
-
-    checkSupport();
     initChatSocket();
+    checkSupport();
+
     //@todo here is where you should initialise the socket operations as described in teh lectures (room joining, chat message receipt etc.)
 }
 
@@ -72,7 +72,10 @@ function initChatSocket() {
 function sendChatText() {
     let chatText = document.getElementById('chat_input').value;
     chat.emit('chat', roomNo, name, chatText);
-    // @todo send the chat message
+    // @todo send the chat
+    let history = document.getElementById('history').value
+    history_chat={history:history};
+    sendAjaxQuery1('/historyRoute',history_chat);
 }
 
 /**
@@ -82,6 +85,7 @@ function sendChatText() {
 function connectToRoom() {
     roomNo = document.getElementById('roomNo').value;
     name = document.getElementById('name').value;
+    let imageUrl= document.getElementById('image_url').value;
 
     let url = document.getElementById('image_url').value;
     let title = document.getElementById('title').value;
@@ -90,14 +94,12 @@ function connectToRoom() {
 
     imageData = {image: url, author: author, title: title, description: description};
     console.log(imageData);
-
-    let imageUrl= document.getElementById('image_url').value;
     if (!name) name = 'Unknown-' + Math.random();
     chat.emit('create or join', roomNo, name);
-
     //@todo join the room
     initCanvas(socket, imageUrl);
     hideLoginInterface(roomNo, name);
+    sendAjaxQuery('/imageRoute', imageData);
     $.post({
         url : "/chatRecords",
         data : JSON.stringify({
@@ -123,10 +125,41 @@ function connectToRoom() {
 
         }
     });
-    sendAjaxQuery('/imageRoute', imageData);
+//     $.ajax({
+//   type: 'POST',
+//   url: '/chatRecords',
+//   data: {roomNo: roomNo},
+//   success: function(resp){
+//       console.log(resp);
+//   }
+// });
 }
+function sendAjaxQuery1(url,data) {
+    $.ajax({
+        url: url,
+        data: JSON.stringify(data),
+        contentType: 'application/json',
+        dataType: 'json',
+        type: 'POST',
+        success: function (dataR) {
+            // no need to JSON parse the result, as we are using
+            // dataType:json, so JQuery knows it and unpacks the
+            // object for us before returning it
+            // in order to have the object printed by alert
+            // we need to JSON.stringify the object
+            storeHistoryData(dataR);
 
-function sendAjaxQuery(url, data) {
+        },
+        error: function (response) {
+            // the error structure we passed is in the field responseText
+            // it is a string, even if we returned as JSON
+            // if you want o unpack it you must do:
+            // const dataR= JSON.parse(response.responseText)
+            console.log(response.responseText);
+        }
+    });
+}
+function sendAjaxQuery(url,data) {
     $.ajax({
         url: url,
         data: JSON.stringify(data),
@@ -151,7 +184,6 @@ function sendAjaxQuery(url, data) {
         }
     });
 }
-
 /**
  * it appends the given html text to the history div
  * this is to be called when the socket receives the chat message (socket.on ('message'...)
@@ -179,6 +211,7 @@ function hideLoginInterface(room, userId) {
     document.getElementById('who_you_are').innerHTML= userId;
     document.getElementById('in_room').innerHTML= ' '+room;
 }
+
 //Service worker here
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', function() {
