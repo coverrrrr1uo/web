@@ -1,0 +1,150 @@
+{
+  "swagger": "2.0",
+  "info": {
+    "description": "The room chat and image annotation",
+    "version": "1.0.0",
+    "title": "web-master",
+    "termsOfService": "http://swagger.io/terms/",
+    "contact": {
+      "name": "COM3504/6504",
+      "email": "zjiang32@sheffield.ac.uk",
+      "url": "http://shef.ac.uk"
+    },
+    "license": {
+      "name": "Apache 2.0",
+      "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
+    }
+  },
+  "host": "localhost:3000",
+  "basePath": "/",
+  "tags": [
+    {
+      "name": "socket-io",
+      "description": "online chatroom"
+    }
+  ],
+  "schemes": [
+    "https",
+    "http"
+  ],
+  "paths": {
+    "/imageRoute": {
+      "post": {
+        "tags": [
+          "socket-io"
+        ],
+        "summary": "add image",
+        "description": "",
+        "operationId": "addRoomImg",
+        "consumes": [
+          "application/json",
+          "application/xml"
+        ],
+        "produces": [
+          "application/json",
+          "application/xml"
+        ],
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "description": "image Data",
+            "required": true,
+            "schema": {
+              "$ref": "#/definitions/image"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "successful operation",
+            "schema": {
+              "type": "object",
+              "$ref": "#/definitions/imageinfo"
+            }
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "image": {
+      "type": "object",
+      "properties": {
+        "room": {
+          "type": "string",
+          "format": "number"
+        },
+        "img": {
+          "type": "string",
+          "format": "url or base64"
+        },
+        "type": {
+          "type": "integer",
+          "format": "int32",
+          "enum": [1, 2]
+        }
+      }
+    },
+    "imageinfo": {
+      "type": "object",
+      "properties": {
+        "id": {
+          "type": "string",
+          "format": "objectid"
+        },
+        "chats": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Chat"
+          }
+        },
+        "annotations": {
+          "type": "array",
+          "items": {
+            "$ref": "#/definitions/Annotation"
+          }
+        },
+        "newInstance": {
+          "type": "boolean"
+        }
+      }
+    },
+    "Chat": {
+      "type": "object",
+      "properties": {
+        "type": {
+          "type": "string",
+          "enum": ["create", "join"]
+        },
+        "name": {
+          "type": "string"
+        },
+        "info": {
+          "type": "string"
+        }
+      }
+    },
+    "Annotation": {
+      "type": "object",
+      "properties": {
+        "prevX": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "prevY": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currX": {
+          "type": "integer",
+          "format": "int32"
+        },
+        "currY": {
+          "type": "integer",
+          "format": "int32"
+        }
+      }
+    }
+  }
+}
