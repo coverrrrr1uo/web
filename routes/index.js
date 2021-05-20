@@ -6,6 +6,7 @@ router.get('/', function(req, res, next) {
   res.render('index', { title: 'Image Browsing' });
 });
 
+
 router.post('/imageRoute', function (req, res, next) {
   // get random weather for a location
   let imageData = req.body;
@@ -21,6 +22,19 @@ router.post('/imageRoute', function (req, res, next) {
   }
 });
 
-
+router.post('/historyRoute', function (req, res, next) {
+  // get random weather for a location
+  let historyData = req.body;
+  console.log(historyData);
+  //Check if the request data is empty
+  if (historyData == null) {
+    res.setHeader('Content-Type', 'application/json');
+    res.status(403).json({error: 403, reason: 'no history data provided'});
+  } else {
+    // send the data back
+    res.setHeader('Content-Type', 'application/json');
+    res.send(JSON.stringify(historyData));
+  }
+});
 
 module.exports = router;
