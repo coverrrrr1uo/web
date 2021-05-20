@@ -5,7 +5,12 @@ let filesToCache = [
     "/javascripts/jquery.min.js",
     "/javascripts/socket.io.min.js",
     "/javascripts/index.js",
-    "/javascripts/canvas.js"
+    "/javascripts/canvas.js",
+    "/javascripts/idb.js",
+    "/javascripts/indexDB.js",
+    "/javascripts/bootstrap.min.js",
+    "/javascripts/jquery-3.6.0.js",
+    "/javascripts/knowledgeGraph.js"
 
 
 
