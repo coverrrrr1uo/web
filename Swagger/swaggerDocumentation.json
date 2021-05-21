@@ -1,12 +1,12 @@
 {
-  "swagger": "2.0",
+  "openapi": "3.0.2",
   "info": {
-    "description": "The room chat and image annotation",
     "version": "1.0.0",
-    "title": "web-master",
-    "termsOfService": "http://swagger.io/terms/",
+    "title": "Assignment starting point",
+    "description": "COM6504",
+    "termsOfService": "http://api_url/terms/",
     "contact": {
-      "name": "COM3504/6504",
+      "name": "COM6504/team/Assignment starting point",
       "email": "zjiang32@sheffield.ac.uk",
       "url": "http://shef.ac.uk"
     },
@@ -15,134 +15,174 @@
       "url": "https://www.apache.org/licenses/LICENSE-2.0.html"
     }
   },
-  "host": "localhost:3000",
-  "basePath": "/",
-  "tags": [
+  "servers": [
     {
-      "name": "socket-io",
-      "description": "online chatroom"
+      "url": "http://localhost:3000/",
+      "description": "the only Local server"
     }
-  ],
-  "schemes": [
-    "https",
-    "http"
   ],
   "paths": {
     "/imageRoute": {
       "post": {
         "tags": [
-          "socket-io"
+          "get the image data"
         ],
-        "summary": "add image",
-        "description": "",
-        "operationId": "addRoomImg",
-        "consumes": [
-          "application/json",
-          "application/xml"
-        ],
-        "produces": [
-          "application/json",
-          "application/xml"
-        ],
-        "parameters": [
-          {
-            "in": "body",
-            "name": "body",
-            "description": "image Data",
-            "required": true,
-            "schema": {
-              "$ref": "#/definitions/image"
+        "description": "get the image and return",
+        "operationId": "image data",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/imageData"
+              }
             }
-          }
-        ],
+          },
+          "required": true
+        },
         "responses": {
           "200": {
-            "description": "successful operation",
-            "schema": {
-              "type": "object",
-              "$ref": "#/definitions/imageinfo"
+            "description": "the returned image is correct and no changes",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/imageData"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The Image is null",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "message": "The image data is null!",
+                  "internal_code": "missing_parameters"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/historyRoute": {
+      "post": {
+        "tags": [
+          "get chat history"
+        ],
+        "description": "get chat history and return",
+        "operationId": "chat history",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/chatData"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "the returned chat history is correct!",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/chatData"
+                }
+              }
+            }
+          },
+          "403": {
+            "description": "The chat history is null",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Error"
+                },
+                "example": {
+                  "message": "The chat history is null!",
+                  "internal_code": "missing_parameters"
+                }
+              }
             }
           }
         }
       }
     }
   },
-  "definitions": {
-    "image": {
-      "type": "object",
-      "properties": {
-        "room": {
-          "type": "string",
-          "format": "number"
-        },
-        "img": {
-          "type": "string",
-          "format": "url or base64"
-        },
-        "type": {
-          "type": "integer",
-          "format": "int32",
-          "enum": [1, 2]
-        }
-      }
-    },
-    "imageinfo": {
-      "type": "object",
-      "properties": {
-        "id": {
-          "type": "string",
-          "format": "objectid"
-        },
-        "chats": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Chat"
+
+  "components": {
+    "schemas": {
+      "imageUrl": {
+        "type": "string",
+        "description": "the url of image",
+        "example": "data:image/jpeg;base64,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"
+      },
+      "author": {
+        "type": "string",
+        "description": "the author name of image",
+        "example": "Kevin"
+      },
+      "title": {
+        "type": "string",
+        "description": "the title of image",
+        "example": "church"
+      },
+      "description": {
+        "type": "string",
+        "description": "the description of image",
+        "example": "Here is the church!"
+      },
+      "name": {
+        "type": "string",
+        "description": "the user id",
+        "example": "Smith"
+      },
+      "chatText": {
+        "type": "string",
+        "description": "chat text",
+        "example": "hello"
+      },
+      "chatData": {
+        "type": "object",
+        "properties": {
+          "name": {
+            "$ref": "#/components/schemas/name"
+          },
+          "chatText": {
+            "$ref": "#/components/schemas/chatText"
           }
-        },
-        "annotations": {
-          "type": "array",
-          "items": {
-            "$ref": "#/definitions/Annotation"
+        }
+      },
+      "imageData": {
+        "type": "object",
+        "properties": {
+          "imageUrl": {
+            "$ref": "#/components/schemas/imageUrl"
+          },
+          "author": {
+            "$ref": "#/components/schemas/author"
+          },
+          "title": {
+            "$ref": "#/components/schemas/title"
+          },
+          "description": {
+            "$ref": "#/components/schemas/description"
           }
-        },
-        "newInstance": {
-          "type": "boolean"
         }
-      }
-    },
-    "Chat": {
-      "type": "object",
-      "properties": {
-        "type": {
-          "type": "string",
-          "enum": ["create", "join"]
-        },
-        "name": {
-          "type": "string"
-        },
-        "info": {
-          "type": "string"
-        }
-      }
-    },
-    "Annotation": {
-      "type": "object",
-      "properties": {
-        "prevX": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "prevY": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "currX": {
-          "type": "integer",
-          "format": "int32"
-        },
-        "currY": {
-          "type": "integer",
-          "format": "int32"
+      },
+      "Error": {
+        "type": "object",
+        "properties": {
+          "message": {
+            "type": "string"
+          },
+          "internal_code": {
+            "type": "string"
+          }
         }
       }
     }

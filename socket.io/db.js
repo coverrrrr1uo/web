@@ -13,7 +13,7 @@ function saveChatRecords(obj) {
         ];
         dbo.collection(CollectionName).insertMany(myobj, function(err, res) {
             if (err) throw err;
-            console.log("插入的文档数量为: " + res.insertedCount);
+            console.log("The number of inserted documents is: " + res.insertedCount);
             db.close();
         });
     });
